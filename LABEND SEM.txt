@@ -1,0 +1,182 @@
+import { useEffect, useState } from "react";
+
+async function request(path, method = "GET", body) {
+  const response = await fetch(`/api/auth/${path}`, {
+    method,
+    credentials: "same-origin",
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(data.message || "Request failed.");
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+}
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [registering, setRegistering] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  // Restore the current session when the page loads.
+  useEffect(() => {
+    let active = true;
+
+    request("me")
+      .then((data) => {
+        if (active) setUser(data.user);
+      })
+      .catch((err) => {
+        if (active && err.status !== 401) setError(err.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const fields = new FormData(form);
+
+    setBusy(true);
+    setError("");
+
+    try {
+      const body = {
+        email: fields.get("email"),
+        password: fields.get("password"),
+      };
+
+      if (registering) body.name = fields.get("name");
+
+      const data = await request(
+        registering ? "register" : "login",
+        "POST",
+        body
+      );
+
+      form.reset();
+      setUser(data.user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLogout() {
+    setBusy(true);
+    setError("");
+
+    try {
+      await request("logout", "POST", {});
+      setUser(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (loading) return <p>Checking your session...</p>;
+
+  return (
+    <main>
+      <section className="card">
+        {user ? (
+          <>
+            <h1>Welcome, {user.name}!</h1>
+            <p>Signed in as {user.email}</p>
+
+            <button disabled={busy} onClick={handleLogout}>
+              {busy ? "Please wait..." : "Logout"}
+            </button>
+          </>
+        ) : (
+          <>
+            <h1>{registering ? "Create account" : "Login"}</h1>
+
+            <form key={String(registering)} onSubmit={handleSubmit}>
+              <fieldset disabled={busy}>
+                {registering && (
+                  <label>
+                    Name
+                    <input
+                      name="name"
+                      autoComplete="name"
+                      maxLength={100}
+                      required
+                    />
+                  </label>
+                )}
+
+                <label>
+                  Email
+                  <input
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    maxLength={254}
+                    required
+                  />
+                </label>
+
+                <label>
+                  Password
+                  <input
+                    name="password"
+                    type="password"
+                    autoComplete={
+                      registering ? "new-password" : "current-password"
+                    }
+                    minLength={registering ? 12 : 1}
+                    maxLength={128}
+                    required
+                  />
+                </label>
+
+                <button type="submit">
+                  {busy
+                    ? "Please wait..."
+                    : registering
+                      ? "Register"
+                      : "Login"}
+                </button>
+              </fieldset>
+            </form>
+
+            <button
+              type="button"
+              className="secondary"
+              disabled={busy}
+              onClick={() => {
+                setRegistering(!registering);
+                setError("");
+              }}
+            >
+              {registering
+                ? "Already registered? Login"
+                : "Create a new account"}
+            </button>
+          </>
+        )}
+
+        {error && <p role="alert">{error}</p>}
+      </section>
+    </main>
+  );
+}
