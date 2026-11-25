@@ -1,0 +1,2476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>RESQ — Disaster Management</title>
+
+  <!-- React -->
+  <script
+    crossorigin
+    src="https://unpkg.com/react@18.3.1/umd/react.production.min.js">
+  </script>
+
+  <script
+    crossorigin
+    src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js">
+  </script>
+
+  <!-- Converts JSX for this single-file demo -->
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+
+    :root {
+      --green: #244d3d;
+      --dark: #102f29;
+      --lime: #d7edaf;
+      --background: #f4f7f3;
+      --border: #e3e9df;
+      --muted: #83917e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "DM Sans", Arial, sans-serif;
+      background: var(--background);
+      color: #294335;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid #d69f65;
+      outline-offset: 3px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Manrope", Arial, sans-serif;
+    }
+
+    p {
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .sidebar {
+      width: 245px;
+      height: 100vh;
+      background: var(--dark);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 20;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .logo-icon {
+      background: var(--lime);
+      color: var(--dark);
+      height: 43px;
+      width: 43px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+    }
+
+    .logo-dot {
+      color: var(--lime);
+    }
+
+    .tagline {
+      font-size: 8px;
+      letter-spacing: 1.7px;
+      color: #9fb79e;
+      margin: 12px 0 30px;
+    }
+
+    .region {
+      padding: 15px 12px;
+      background: #1d3c31;
+      border: 1px solid #36523f;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .region-avatar {
+      background: #3b5946;
+      padding: 9px 11px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .region strong {
+      font-size: 11px;
+      display: block;
+    }
+
+    .region small {
+      color: #9db398;
+      font-size: 9px;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #98bf80;
+      flex-shrink: 0;
+    }
+
+    .region .dot {
+      margin-left: auto;
+    }
+
+    .nav-label {
+      font-size: 9px;
+      letter-spacing: 1.7px;
+      color: #89a180;
+      margin: 30px 10px 14px;
+    }
+
+    .nav-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      padding: 14px 12px;
+      border-radius: 7px;
+      margin-bottom: 5px;
+      background: transparent;
+      color: #b5c8ad;
+      font-size: 12px;
+    }
+
+    .nav-button:hover {
+      background: #284a36;
+    }
+
+    .nav-button.active {
+      background: var(--lime);
+      color: #284733;
+      font-weight: 700;
+    }
+
+    .nav-symbol {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .nav-count {
+      background: #3b5941;
+      color: #d7edaf;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 9px;
+      margin-left: auto;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 35px;
+    }
+
+    .help-card {
+      padding: 20px 15px;
+      background: linear-gradient(130deg, #304d38, #203d2d);
+      border: 1px solid #3c5840;
+      border-radius: 10px;
+    }
+
+    .help-card h3 {
+      font-size: 13px;
+      margin: 14px 0 8px;
+    }
+
+    .help-card p {
+      font-size: 10px;
+      color: #a4b69a;
+    }
+
+    .help-card button {
+      color: #d7edaf;
+      background: transparent;
+      font-size: 10px;
+      margin-top: 15px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #36513c;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      background: #dedcc6;
+      color: #526446;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .profile strong {
+      display: block;
+      font-size: 10px;
+    }
+
+    .profile small {
+      display: block;
+      font-size: 9px;
+      color: #94aa8c;
+      margin-top: 5px;
+    }
+
+    main {
+      margin-left: 245px;
+    }
+
+    .topbar {
+      height: 75px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 35px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #93a087;
+      font-size: 11px;
+    }
+
+    .breadcrumb strong {
+      color: #526748;
+      font-weight: 500;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .demo-tag {
+      background: #f0f5e7;
+      color: #839a65;
+      padding: 7px 9px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .notification {
+      background: transparent;
+      font-size: 19px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      font-size: 20px;
+      color: var(--green);
+    }
+
+    .content {
+      max-width: 1550px;
+      margin: auto;
+      padding: 32px 35px 22px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #83986b;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 30px;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .heading p {
+      font-size: 12px;
+    }
+
+    .primary-button {
+      background: var(--green);
+      color: white;
+      border-radius: 7px;
+      padding: 13px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .primary-button:hover {
+      background: #3a694b;
+    }
+
+    .demo-banner {
+      padding: 12px 16px;
+      background: #eef4e4;
+      border: 1px solid #e0e8d2;
+      border-radius: 7px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 24px;
+      color: #839866;
+    }
+
+    .demo-banner p {
+      font-size: 10px;
+      color: #7f8d65;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 17px;
+      margin-bottom: 23px;
+    }
+
+    .stat {
+      padding: 20px;
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #7e8e72;
+    }
+
+    .stat-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .orange {
+      background: #fff0df;
+      color: #ce995d;
+    }
+
+    .green {
+      background: #edf4e3;
+      color: #819f67;
+    }
+
+    .blue {
+      background: #eaf2f7;
+      color: #7da0b6;
+    }
+
+    .purple {
+      background: #f2edf8;
+      color: #a18cb8;
+    }
+
+    .stat-number {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0 6px;
+    }
+
+    .stat-number strong {
+      font-family: "Manrope", sans-serif;
+      font-size: 31px;
+      letter-spacing: -1px;
+    }
+
+    .stat-number span {
+      color: #8fa777;
+      font-size: 9px;
+    }
+
+    .stat p {
+      font-size: 10px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+      gap: 22px;
+      margin-bottom: 23px;
+    }
+
+    .card-heading {
+      padding: 21px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    h2 {
+      font-size: 15px;
+      letter-spacing: -0.3px;
+    }
+
+    .card-heading p {
+      font-size: 10px;
+      margin-top: 6px;
+    }
+
+    .small-tag {
+      padding: 6px 8px;
+      background: #f5f7ee;
+      color: #8fa17a;
+      font-size: 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .map {
+      position: relative;
+      height: 300px;
+      background: #e8efe1;
+      overflow: hidden;
+    }
+
+    .map svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+    }
+
+    .map-label {
+      position: absolute;
+      color: #809271;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .city-one {
+      top: 16%;
+      left: 52%;
+    }
+
+    .city-two {
+      top: 45%;
+      left: 43%;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    .city-three {
+      bottom: 20%;
+      left: 8%;
+    }
+
+    .map-marker {
+      position: absolute;
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      border: 4px solid white;
+      background: #f4d7b7;
+      box-shadow: 0 0 0 9px #e6ab5e22;
+      font-size: 20px;
+      display: grid;
+      place-items: center;
+      transition: transform 0.2s;
+    }
+
+    .map-marker:hover {
+      transform: scale(1.15);
+    }
+
+    .marker-one {
+      top: 60%;
+      left: 61%;
+    }
+
+    .marker-two {
+      top: 22%;
+      left: 34%;
+      background: #f4cec2;
+    }
+
+    .marker-three {
+      top: 61%;
+      left: 20%;
+      background: #f0e2b6;
+    }
+
+    .shelter-marker {
+      position: absolute;
+      right: 20%;
+      top: 25%;
+      background: #89a87a;
+      border: 3px solid white;
+      color: white;
+      padding: 3px 9px;
+      font-size: 24px;
+      border-radius: 8px;
+    }
+
+    .map-legend {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      display: flex;
+      gap: 12px;
+      background: #fffffff0;
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 8px;
+      color: #82946f;
+    }
+
+    .map-note {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 7px;
+      color: #86987b;
+    }
+
+    .readiness-summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 23px;
+      margin-bottom: 22px;
+    }
+
+    .score-ring {
+      height: 108px;
+      width: 108px;
+      border-radius: 50%;
+      background: conic-gradient(#8fa975 0 86%, #eef3e8 86% 100%);
+      display: grid;
+      place-items: center;
+    }
+
+    .score-inner {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .score-inner strong {
+      font-family: "Manrope", sans-serif;
+      font-size: 29px;
+    }
+
+    .score-inner strong span {
+      font-size: 14px;
+    }
+
+    .score-inner small {
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: #9aaa88;
+    }
+
+    .available-tag {
+      background: #f0f5e5;
+      color: #829c64;
+      font-size: 8px;
+      border-radius: 4px;
+      padding: 5px 8px;
+      display: inline-block;
+    }
+
+    .readiness-summary p {
+      font-size: 10px;
+      margin-top: 9px;
+    }
+
+    .resource {
+      margin: 0 23px 18px;
+    }
+
+    .resource-label {
+      display: flex;
+      justify-content: space-between;
+      color: #839575;
+      font-size: 10px;
+      margin-bottom: 8px;
+    }
+
+    .resource-label strong {
+      font-weight: 500;
+    }
+
+    .progress {
+      height: 5px;
+      background: #eff3e9;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    .progress-fill.green {
+      background: #a0b88b;
+    }
+
+    .progress-fill.blue {
+      background: #9cbaca;
+    }
+
+    .progress-fill.orange {
+      background: #dfb88d;
+    }
+
+    .readiness-link {
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #859f67;
+      font-size: 10px;
+      border-top: 1px solid #edf1e6;
+    }
+
+    .incident-section {
+      margin-bottom: 28px;
+    }
+
+    .count {
+      display: inline-block;
+      margin-left: 8px;
+      background: #eff4e5;
+      color: #8d9f72;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 9px;
+      vertical-align: middle;
+    }
+
+    .table-controls {
+      display: flex;
+      gap: 9px;
+    }
+
+    .table-controls input,
+    .table-controls select {
+      border: 1px solid #e2e9d9;
+      padding: 9px 10px;
+      border-radius: 5px;
+      color: #829371;
+      background: white;
+      font-size: 10px;
+    }
+
+    .table-controls input {
+      width: 160px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f7f9f3;
+      padding: 12px 20px;
+      font-size: 8px;
+      color: #99a78a;
+      letter-spacing: 1px;
+      font-weight: 500;
+      border-top: 1px solid #edf1e6;
+      border-bottom: 1px solid #edf1e6;
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #edf1e6;
+      font-size: 10px;
+    }
+
+    .incident-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .incident-icon {
+      font-size: 19px;
+      padding: 8px;
+      border-radius: 7px;
+      background: #f1f5e9;
+    }
+
+    .incident-info strong {
+      display: block;
+      font-size: 11px;
+      color: #526748;
+      font-weight: 500;
+    }
+
+    .incident-info small {
+      display: block;
+      font-size: 9px;
+      color: #98a58a;
+      margin-top: 6px;
+    }
+
+    .severity {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 9px;
+    }
+
+    .critical {
+      background: #fcece6;
+      color: #cb8977;
+    }
+
+    .high {
+      background: #fff0df;
+      color: #c59b61;
+    }
+
+    .moderate {
+      background: #f8f1d9;
+      color: #b5a05c;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #829671;
+    }
+
+    .detail-button {
+      background: transparent;
+      color: #8fa57a;
+      font-size: 22px;
+    }
+
+    .table-footer {
+      padding: 13px 21px;
+      color: #9aa98a;
+      font-size: 9px;
+    }
+
+    .empty {
+      padding: 35px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading p {
+      font-size: 10px;
+      margin-top: 6px;
+    }
+
+    .text-button {
+      background: transparent;
+      color: #829c65;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .shelter-grid,
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .shelter-card {
+      padding: 20px;
+    }
+
+    .shelter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .shelter-icon {
+      background: #eef4e3;
+      color: #88a473;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      font-size: 26px;
+    }
+
+    .shelter-card h3 {
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .shelter-card > p {
+      font-size: 10px;
+    }
+
+    .beds {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 19px 0 10px;
+    }
+
+    .beds strong {
+      font-size: 15px;
+      color: #809d65;
+    }
+
+    .beds strong span {
+      font-size: 9px;
+      font-weight: 400;
+      color: #92a17f;
+    }
+
+    .beds small {
+      color: #a0ad91;
+      font-size: 8px;
+    }
+
+    .facilities {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 15px;
+      color: #9ba98a;
+      font-size: 8px;
+    }
+
+    .facilities button {
+      background: transparent;
+      color: #829c65;
+      font-size: 9px;
+    }
+
+    .team-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .team-icon {
+      font-size: 38px;
+    }
+
+    .team-card p {
+      font-size: 12px;
+    }
+
+    .safety-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .safety-card {
+      padding: 28px;
+    }
+
+    .safety-card > span {
+      font-size: 35px;
+    }
+
+    .safety-card h2 {
+      margin: 18px 0 12px;
+    }
+
+    .safety-card p {
+      font-size: 12px;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #9eac8f;
+      font-size: 9px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: #102e2988;
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 50;
+    }
+
+    .modal {
+      position: relative;
+      width: 100%;
+      max-width: 470px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 15px;
+      padding: 32px;
+      box-shadow: 0 20px 80px #102e2944;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 19px;
+      background: transparent;
+      color: #8c9f7a;
+    }
+
+    .modal-icon {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #f0f5e6;
+      color: #829d66;
+      font-size: 25px;
+    }
+
+    .modal h2 {
+      font-size: 22px;
+      margin: 20px 0 10px;
+    }
+
+    .modal > p {
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+    }
+
+    form label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: #6f875b;
+      font-size: 11px;
+    }
+
+    form input,
+    form select,
+    form textarea {
+      width: 100%;
+      background: #fafbf7;
+      border: 1px solid #dfe7d3;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: #526747;
+    }
+
+    form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .detail-box {
+      background: #f4f7ed;
+      padding: 18px;
+      border-radius: 7px;
+      margin-bottom: 20px;
+    }
+
+    .detail-box p {
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 90vw;
+      width: max-content;
+      background: #28523b;
+      color: white;
+      border-radius: 9px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      z-index: 100;
+      box-shadow: 0 8px 30px #102e2933;
+    }
+
+    .toast p {
+      color: white;
+      font-size: 12px;
+    }
+
+    .toast button {
+      color: white;
+      background: transparent;
+    }
+
+    @media (max-width: 1200px) {
+      .sidebar {
+        width: 215px;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      main {
+        margin-left: 215px;
+      }
+
+      .content {
+        padding: 28px 23px;
+      }
+
+      .topbar {
+        padding: 0 23px;
+      }
+
+      .stat {
+        padding: 15px;
+      }
+
+      .stats {
+        gap: 12px;
+      }
+
+      .overview-grid {
+        grid-template-columns: minmax(0, 1.5fr) minmax(250px, 1fr);
+        gap: 15px;
+      }
+
+      .shelter-grid {
+        gap: 12px;
+      }
+
+      .shelter-card {
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .shelter-grid,
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .shelter-card {
+        padding: 22px;
+      }
+
+      .incident-heading {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .readiness-summary {
+        justify-content: flex-start;
+        padding-left: 25px;
+      }
+
+      .heading {
+        align-items: flex-start;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .safety-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar {
+        width: 245px;
+        transform: translateX(-100%);
+        transition: transform 0.2s;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 10px 0 35px #102e2944;
+      }
+
+      main {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .topbar {
+        height: 64px;
+        padding: 0 16px;
+      }
+
+      .breadcrumb {
+        gap: 9px;
+        font-size: 10px;
+      }
+
+      .top-actions {
+        gap: 12px;
+      }
+
+      .content {
+        padding: 24px 16px;
+      }
+
+      .heading {
+        flex-wrap: wrap;
+        gap: 17px;
+      }
+
+      .eyebrow {
+        font-size: 7px;
+      }
+
+      .heading p {
+        font-size: 11px;
+      }
+
+      .demo-banner {
+        align-items: flex-start;
+      }
+
+      .stats {
+        gap: 10px;
+      }
+
+      .stat-top {
+        font-size: 10px;
+      }
+
+      .stat-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+      }
+
+      .stat-number strong {
+        font-size: 27px;
+      }
+
+      .stat p {
+        font-size: 9px;
+      }
+
+      .card-heading {
+        padding: 18px;
+      }
+
+      .map {
+        height: 270px;
+      }
+
+      .map-label {
+        font-size: 6px;
+      }
+
+      .city-two {
+        font-size: 9px;
+      }
+
+      .map-note {
+        font-size: 6px;
+      }
+
+      .table-controls {
+        width: 100%;
+      }
+
+      .table-controls input {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .table-controls select {
+        max-width: 125px;
+      }
+
+      .section-heading h2 {
+        font-size: 13px;
+      }
+
+      .section-heading p {
+        font-size: 9px;
+      }
+
+      footer span:last-child {
+        display: none;
+      }
+
+      .modal {
+        padding: 25px;
+      }
+
+      .toast p {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <p style="padding:30px;font-family:Arial">
+      Loading RESQ… Internet is required to load React.
+    </p>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const initialIncidents = [
+      {
+        id: 1,
+        title: "Flooding near Musi River",
+        location: "Malakpet, Hyderabad",
+        type: "Flood",
+        severity: "Critical",
+        status: "Responding",
+        description: "Sample report of rising water near residential roads.",
+        icon: "🌊"
+      },
+      {
+        id: 2,
+        title: "Warehouse fire reported",
+        location: "Balanagar, Hyderabad",
+        type: "Fire",
+        severity: "High",
+        status: "Team dispatched",
+        description: "Sample warehouse fire incident awaiting field updates.",
+        icon: "🔥"
+      },
+      {
+        id: 3,
+        title: "Strong winds and fallen trees",
+        location: "Gachibowli, Hyderabad",
+        type: "Storm",
+        severity: "Moderate",
+        status: "Monitoring",
+        description: "Sample report of fallen trees obstructing a local road.",
+        icon: "🌪️"
+      }
+    ];
+
+    const shelters = [
+      {
+        name: "Community Relief Centre",
+        location: "Secunderabad",
+        available: 74,
+        capacity: 200
+      },
+      {
+        name: "Government School Shelter",
+        location: "Malakpet",
+        available: 36,
+        capacity: 120
+      },
+      {
+        name: "Sports Complex Relief Camp",
+        location: "Gachibowli",
+        available: 118,
+        capacity: 180
+      }
+    ];
+
+    const teams = [
+      {
+        name: "Rescue Team Alpha",
+        role: "Search and rescue operations",
+        members: 12,
+        icon: "🚒"
+      },
+      {
+        name: "Medical Team Bravo",
+        role: "Medical aid and emergency care",
+        members: 8,
+        icon: "🚑"
+      },
+      {
+        name: "Relief Team Charlie",
+        role: "Food, water and supply distribution",
+        members: 15,
+        icon: "📦"
+      }
+    ];
+
+    const navigation = [
+      ["Overview", "▦"],
+      ["Incidents", "⚠"],
+      ["Shelters", "⌂"],
+      ["Response Teams", "♧"],
+      ["Safety Guide", "✚"]
+    ];
+
+    function readSavedIncidents() {
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem("resq-demo-incidents")
+        );
+
+        if (
+          Array.isArray(saved) &&
+          saved.length > 0 &&
+          saved.every(item =>
+            item &&
+            typeof item.id === "number" &&
+            typeof item.title === "string" &&
+            typeof item.location === "string" &&
+            typeof item.type === "string" &&
+            typeof item.status === "string" &&
+            ["Critical", "High", "Moderate"].includes(item.severity)
+          )
+        ) {
+          return saved;
+        }
+      } catch (error) {
+        // The dashboard still works when browser storage is unavailable.
+      }
+
+      return initialIncidents;
+    }
+
+    function Modal({ titleId, onClose, children }) {
+      const dialogRef = useRef(null);
+
+      useEffect(() => {
+        const previousFocus = document.activeElement;
+        const previousOverflow = document.body.style.overflow;
+
+        document.body.style.overflow = "hidden";
+
+        const dialog = dialogRef.current;
+
+        const selector =
+          'button, input, select, textarea, a[href], [tabindex="0"]';
+
+        const firstControl = dialog.querySelector(selector);
+
+        if (firstControl) firstControl.focus();
+
+        function handleKeyDown(event) {
+          if (event.key === "Escape") {
+            onClose();
+          }
+
+          if (event.key === "Tab") {
+            const controls = Array.from(
+              dialog.querySelectorAll(selector)
+            ).filter(element => !element.disabled);
+
+            const first = controls[0];
+            const last = controls[controls.length - 1];
+
+            if (!first) return;
+
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last.focus();
+            } else if (
+              !event.shiftKey &&
+              document.activeElement === last
+            ) {
+              event.preventDefault();
+              first.focus();
+            }
+          }
+        }
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+          document.body.style.overflow = previousOverflow;
+          document.removeEventListener("keydown", handleKeyDown);
+
+          if (previousFocus && previousFocus.isConnected) {
+            previousFocus.focus();
+          }
+        };
+      }, [onClose]);
+
+      return (
+        <div
+          className="modal-overlay"
+          onClick={onClose}
+        >
+          <section
+            ref={dialogRef}
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            onClick={event => event.stopPropagation()}
+          >
+            {children}
+          </section>
+        </div>
+      );
+    }
+
+    function StatCard({ title, value, description, icon, color }) {
+      return (
+        <article className="card stat">
+          <div className="stat-top">
+            <span>{title}</span>
+            <span className={"stat-icon " + color}>{icon}</span>
+          </div>
+
+          <div className="stat-number">
+            <strong>{value}</strong>
+            <span>↗ Demo</span>
+          </div>
+
+          <p>{description}</p>
+        </article>
+      );
+    }
+
+    function ResourceBar({ title, percent, color }) {
+      return (
+        <div className="resource">
+          <div className="resource-label">
+            <span>{title}</span>
+            <strong>{percent}%</strong>
+          </div>
+
+          <div className="progress">
+            <div
+              className={"progress-fill " + color}
+              style={{ width: percent + "%" }}
+            ></div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [page, setPage] = useState("Overview");
+      const [incidents, setIncidents] = useState(readSavedIncidents);
+      const [search, setSearch] = useState("");
+      const [severity, setSeverity] = useState("All");
+      const [showReport, setShowReport] = useState(false);
+      const [selected, setSelected] = useState(null);
+      const [message, setMessage] = useState("");
+      const [menuOpen, setMenuOpen] = useState(false);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem(
+            "resq-demo-incidents",
+            JSON.stringify(incidents)
+          );
+        } catch (error) {
+          // Reports remain usable in memory if storage is unavailable.
+        }
+      }, [incidents]);
+
+      useEffect(() => {
+        if (!message) return;
+
+        const timer = setTimeout(() => setMessage(""), 6000);
+
+        return () => clearTimeout(timer);
+      }, [message]);
+
+      const closeReport = React.useCallback(
+        () => setShowReport(false),
+        []
+      );
+
+      const closeDetails = React.useCallback(
+        () => setSelected(null),
+        []
+      );
+
+      function navigate(name) {
+        setPage(name);
+        setMenuOpen(false);
+        setSearch("");
+        setSeverity("All");
+      }
+
+      function submitReport(event) {
+        event.preventDefault();
+
+        const form = new FormData(event.currentTarget);
+        const title = String(form.get("title") || "").trim();
+        const location = String(form.get("location") || "").trim();
+        const type = form.get("type");
+
+        if (!title || !location) {
+          setMessage("Please enter an incident description and location.");
+          return;
+        }
+
+        const icons = {
+          Flood: "🌊",
+          Fire: "🔥",
+          Storm: "🌪️",
+          Earthquake: "🏚️",
+          Other: "⚠️"
+        };
+
+        const incident = {
+          id: Date.now(),
+          title,
+          location,
+          type,
+          severity: form.get("severity"),
+          description: String(form.get("description") || "").trim(),
+          status: "Pending review",
+          icon: icons[type]
+        };
+
+        setIncidents(previous => [incident, ...previous]);
+        setShowReport(false);
+
+        setMessage(
+          "Demo incident added. No emergency service was contacted."
+        );
+      }
+
+      const visibleIncidents = incidents.filter(incident => {
+        const text =
+          `${incident.title} ${incident.location} ${incident.type}`
+            .toLowerCase();
+
+        return (
+          text.includes(search.toLowerCase()) &&
+          (severity === "All" || incident.severity === severity)
+        );
+      });
+
+      const availableBeds = shelters.reduce(
+        (total, shelter) => total + shelter.available,
+        0
+      );
+
+      return (
+        <div>
+          <aside className={"sidebar " + (menuOpen ? "open" : "")}>
+            <div className="logo">
+              <span className="logo-icon">✚</span>
+              <span>RESQ<span className="logo-dot">.</span></span>
+            </div>
+
+            <p className="tagline">DISASTER RESPONSE NETWORK</p>
+
+            <div className="region">
+              <span className="region-avatar">H</span>
+
+              <div>
+                <strong>Hyderabad Region</strong>
+                <small>Regional control centre</small>
+              </div>
+
+              <span className="dot"></span>
+            </div>
+
+            <p className="nav-label">WORKSPACE</p>
+
+            <nav aria-label="Main navigation">
+              {navigation.map(([name, symbol]) => (
+                <button
+                  key={name}
+                  className={
+                    "nav-button " + (page === name ? "active" : "")
+                  }
+                  onClick={() => navigate(name)}
+                >
+                  <span className="nav-symbol">{symbol}</span>
+                  {name}
+
+                  {name === "Incidents" && (
+                    <span className="nav-count">
+                      {incidents.length}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </nav>
+
+            <div className="sidebar-bottom">
+              <div className="help-card">
+                <span style={{ fontSize: "25px" }}>🛡️</span>
+                <h3>Every second matters.</h3>
+
+                <p>
+                  Stay prepared. Stay connected.
+                  <br />
+                  Together, we respond faster.
+                </p>
+
+                <button onClick={() => navigate("Safety Guide")}>
+                  View safety guide ↗
+                </button>
+              </div>
+
+              <div className="profile">
+                <div className="avatar">RC</div>
+
+                <div>
+                  <strong>Response Coordinator</strong>
+                  <small>Demo workspace</small>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <main>
+            <header className="topbar">
+              <div className="breadcrumb">
+                <button
+                  className="menu-toggle"
+                  aria-label="Toggle navigation"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >
+                  ☰
+                </button>
+
+                <span>Workspace</span>
+                <span>/</span>
+                <strong>{page}</strong>
+              </div>
+
+              <div className="top-actions">
+                <span className="demo-tag">DEMO MODE</span>
+
+                <button
+                  className="notification"
+                  aria-label="Show notifications"
+                  onClick={() =>
+                    setMessage(
+                      `${incidents.length} sample incidents are listed.`
+                    )
+                  }
+                >
+                  🔔
+                </button>
+
+                <div className="avatar">RC</div>
+              </div>
+            </header>
+
+            <div className="content">
+              <section className="heading">
+                <div>
+                  <div className="eyebrow">
+                    <span className="dot"></span>
+                    CONNECTED FOR A SAFER TOMORROW
+                  </div>
+
+                  <h1>
+                    {page === "Overview" ? "Response overview" : page}
+                  </h1>
+
+                  <p>
+                    A clearer picture. A coordinated response.
+                    A safer community.
+                  </p>
+                </div>
+
+                <button
+                  className="primary-button"
+                  onClick={() => setShowReport(true)}
+                >
+                  + Report Incident
+                </button>
+              </section>
+
+              <div className="demo-banner">
+                <span>ⓘ</span>
+
+                <p>
+                  <strong>Hackathon demonstration</strong> — All
+                  incidents, map positions, teams and capacities
+                  are sample data.
+                </p>
+              </div>
+
+              {(page === "Overview" || page === "Incidents") && (
+                <>
+                  <section className="stats">
+                    <StatCard
+                      title="Active Incidents"
+                      value={incidents.length}
+                      description="Reported in the demo region"
+                      icon="⚠"
+                      color="orange"
+                    />
+
+                    <StatCard
+                      title="Response Teams"
+                      value="03"
+                      description="Sample teams ready to assist"
+                      icon="♧"
+                      color="green"
+                    />
+
+                    <StatCard
+                      title="Available Beds"
+                      value={availableBeds}
+                      description="Across three sample shelters"
+                      icon="⌂"
+                      color="blue"
+                    />
+
+                    <StatCard
+                      title="People Supported"
+                      value="1,284"
+                      description="Illustrative relief operations"
+                      icon="♡"
+                      color="purple"
+                    />
+                  </section>
+
+                  {page === "Overview" && (
+                    <section className="overview-grid">
+                      <article className="card">
+                        <div className="card-heading">
+                          <div>
+                            <h2>Regional incident map</h2>
+                            <p>Click a marker to view incident details</p>
+                          </div>
+
+                          <span className="small-tag">
+                            Sample locations
+                          </span>
+                        </div>
+
+                        <div className="map">
+                          <svg
+                            viewBox="0 0 800 350"
+                            preserveAspectRatio="none"
+                            aria-hidden="true"
+                          >
+                            <defs>
+                              <pattern
+                                id="grid"
+                                width="60"
+                                height="50"
+                                patternUnits="userSpaceOnUse"
+                              >
+                                <path
+                                  d="M60 0 H0 V50"
+                                  fill="none"
+                                  stroke="#d8e3d2"
+                                  strokeWidth="1"
+                                />
+                              </pattern>
+                            </defs>
+
+                            <rect
+                              width="800"
+                              height="350"
+                              fill="url(#grid)"
+                            />
+
+                            <path
+                              d="M-40 230 Q180 120 340 235 T850 180"
+                              fill="none"
+                              stroke="#afd7df"
+                              strokeWidth="28"
+                            />
+
+                            <path
+                              d="M-20 60 L250 140 L500 70 L840 290
+                                 M100 -20 L290 170 L210 390
+                                 M570 -20 L440 180 L600 380
+                                 M-20 310 L400 160 L850 50"
+                              fill="none"
+                              stroke="white"
+                              strokeWidth="15"
+                            />
+
+                            <path
+                              d="M-20 60 L250 140 L500 70 L840 290
+                                 M100 -20 L290 170 L210 390
+                                 M570 -20 L440 180 L600 380
+                                 M-20 310 L400 160 L850 50"
+                              fill="none"
+                              stroke="#d4dccd"
+                              strokeWidth="2"
+                            />
+                          </svg>
+
+                          <span className="map-label city-one">
+                            SECUNDERABAD
+                          </span>
+
+                          <span className="map-label city-two">
+                            HYDERABAD
+                          </span>
+
+                          <span className="map-label city-three">
+                            GACHIBOWLI
+                          </span>
+
+                          {initialIncidents.map((incident, index) => (
+                            <button
+                              key={incident.id}
+                              className={
+                                "map-marker " +
+                                [
+                                  "marker-one",
+                                  "marker-two",
+                                  "marker-three"
+                                ][index]
+                              }
+                              aria-label={"View " + incident.title}
+                              onClick={() => setSelected(incident)}
+                            >
+                              {incident.icon}
+                            </button>
+                          ))}
+
+                          <span className="shelter-marker">⌂</span>
+
+                          <div className="map-legend">
+                            <span>🟠 Incident</span>
+                            <span>🟢 Shelter</span>
+                          </div>
+
+                          <span className="map-note">
+                            Illustrative map · Not for navigation
+                          </span>
+                        </div>
+                      </article>
+
+                      <article className="card">
+                        <div className="card-heading">
+                          <div>
+                            <h2>Response readiness</h2>
+                            <p>Resources ready when they matter</p>
+                          </div>
+                        </div>
+
+                        <div className="readiness-summary">
+                          <div className="score-ring">
+                            <div className="score-inner">
+                              <strong>86<span>%</span></strong>
+                              <small>READY</small>
+                            </div>
+                          </div>
+
+                          <div>
+                            <span className="available-tag">
+                              Operational
+                            </span>
+
+                            <p>
+                              Sample regional
+                              <br />
+                              preparedness score
+                            </p>
+                          </div>
+                        </div>
+
+                        <ResourceBar
+                          title="Medical supplies"
+                          percent={82}
+                          color="green"
+                        />
+
+                        <ResourceBar
+                          title="Rescue equipment"
+                          percent={94}
+                          color="blue"
+                        />
+
+                        <ResourceBar
+                          title="Relief essentials"
+                          percent={76}
+                          color="orange"
+                        />
+
+                        <button
+                          className="readiness-link"
+                          onClick={() => navigate("Response Teams")}
+                        >
+                          View response teams →
+                        </button>
+                      </article>
+                    </section>
+                  )}
+
+                  <section className="card incident-section">
+                    <div className="card-heading incident-heading">
+                      <div>
+                        <h2>
+                          Active incidents
+                          <span className="count">
+                            {incidents.length}
+                          </span>
+                        </h2>
+
+                        <p>
+                          Prioritize, coordinate and track the response
+                        </p>
+                      </div>
+
+                      <div className="table-controls">
+                        <input
+                          type="search"
+                          aria-label="Search incidents"
+                          placeholder="Search incidents..."
+                          value={search}
+                          onChange={event =>
+                            setSearch(event.target.value)
+                          }
+                        />
+
+                        <select
+                          aria-label="Filter by severity"
+                          value={severity}
+                          onChange={event =>
+                            setSeverity(event.target.value)
+                          }
+                        >
+                          <option value="All">All severity</option>
+                          <option>Critical</option>
+                          <option>High</option>
+                          <option>Moderate</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="table-scroll">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>INCIDENT / LOCATION</th>
+                            <th>SEVERITY</th>
+                            <th>STATUS</th>
+                            <th>DETAILS</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {visibleIncidents.map(incident => (
+                            <tr key={incident.id}>
+                              <td>
+                                <div className="incident-info">
+                                  <span className="incident-icon">
+                                    {incident.icon || "⚠️"}
+                                  </span>
+
+                                  <div>
+                                    <strong>{incident.title}</strong>
+                                    <small>
+                                      📍 {incident.location}
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <span
+                                  className={
+                                    "severity " +
+                                    incident.severity.toLowerCase()
+                                  }
+                                >
+                                  ● {incident.severity}
+                                </span>
+                              </td>
+
+                              <td>
+                                <span className="status">
+                                  <span className="dot"></span>
+                                  {incident.status}
+                                </span>
+                              </td>
+
+                              <td>
+                                <button
+                                  className="detail-button"
+                                  aria-label={
+                                    "Details for " + incident.title
+                                  }
+                                  onClick={() => setSelected(incident)}
+                                >
+                                  ↗
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {visibleIncidents.length === 0 && (
+                        <p className="empty">
+                          No incidents match your search.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="table-footer">
+                      Showing {visibleIncidents.length} of{" "}
+                      {incidents.length} sample incidents
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {(page === "Overview" || page === "Shelters") && (
+                <section>
+                  <div className="section-heading">
+                    <div>
+                      <h2>Safe spaces, stronger communities</h2>
+                      <p>
+                        Sample shelter availability across the region
+                      </p>
+                    </div>
+
+                    {page === "Overview" && (
+                      <button
+                        className="text-button"
+                        onClick={() => navigate("Shelters")}
+                      >
+                        View all shelters →
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="shelter-grid">
+                    {shelters.map(shelter => (
+                      <article
+                        className="card shelter-card"
+                        key={shelter.name}
+                      >
+                        <div className="shelter-top">
+                          <span className="shelter-icon">⌂</span>
+
+                          <span className="available-tag">
+                            Accepting people
+                          </span>
+                        </div>
+
+                        <h3>{shelter.name}</h3>
+                        <p>📍 {shelter.location}</p>
+
+                        <div className="beds">
+                          <strong>
+                            {shelter.available}
+                            <span> beds available</span>
+                          </strong>
+
+                          <small>
+                            {shelter.capacity - shelter.available}/
+                            {shelter.capacity} occupied
+                          </small>
+                        </div>
+
+                        <div className="progress">
+                          <div
+                            className="progress-fill green"
+                            style={{
+                              width:
+                                ((shelter.capacity -
+                                  shelter.available) /
+                                  shelter.capacity) *
+                                  100 +
+                                "%"
+                            }}
+                          ></div>
+                        </div>
+
+                        <div className="facilities">
+                          <span>Water · First aid · Food</span>
+
+                          <button
+                            onClick={() =>
+                              setMessage(
+                                `${shelter.name}: ` +
+                                `${shelter.available} sample beds ` +
+                                `available. Facilities: water, ` +
+                                `first aid and food.`
+                              )
+                            }
+                          >
+                            Details ↗
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {page === "Response Teams" && (
+                <section className="team-grid">
+                  {teams.map(team => (
+                    <article
+                      className="card team-card"
+                      key={team.name}
+                    >
+                      <span className="team-icon">{team.icon}</span>
+                      <h2>{team.name}</h2>
+                      <p>{team.role}</p>
+
+                      <span className="available-tag">
+                        {team.members} sample members
+                      </span>
+
+                      <button
+                        className="primary-button"
+                        onClick={() =>
+                          setMessage(
+                            `${team.name}: dispatch simulated. ` +
+                            `No real team was contacted.`
+                          )
+                        }
+                      >
+                        Simulate dispatch →
+                      </button>
+                    </article>
+                  ))}
+                </section>
+              )}
+
+              {page === "Safety Guide" && (
+                <section className="safety-grid">
+                  {[
+                    {
+                      icon: "🎒",
+                      title: "Emergency kit",
+                      text:
+                        "Prepare drinking water, food, a torch, " +
+                        "essential medicines and copies of important documents."
+                    },
+                    {
+                      icon: "🌊",
+                      title: "Flood awareness",
+                      text:
+                        "Avoid entering floodwater. Follow verified " +
+                        "evacuation instructions from local authorities."
+                    },
+                    {
+                      icon: "🔥",
+                      title: "Fire safety",
+                      text:
+                        "Use a safe exit to leave the building. " +
+                        "Avoid lifts and follow responder instructions."
+                    },
+                    {
+                      icon: "📢",
+                      title: "Stay informed",
+                      text:
+                        "Follow official alerts, share confirmed information " +
+                        "and agree on a family communication plan."
+                    }
+                  ].map(item => (
+                    <article
+                      className="card safety-card"
+                      key={item.title}
+                    >
+                      <span>{item.icon}</span>
+                      <h2>{item.title}</h2>
+                      <p>{item.text}</p>
+                    </article>
+                  ))}
+                </section>
+              )}
+
+              <footer>
+                <span>✚ RESQ · Built for communities.</span>
+                <span>Hackathon prototype · React + HTML + CSS</span>
+              </footer>
+            </div>
+          </main>
+
+          {showReport && (
+            <Modal
+              titleId="report-title"
+              onClose={closeReport}
+            >
+              <button
+                className="close-button"
+                aria-label="Close report form"
+                onClick={closeReport}
+              >
+                ✕
+              </button>
+
+              <span className="modal-icon">⚠</span>
+              <h2 id="report-title">Report an incident</h2>
+
+              <p>
+                Add a sample report to this browser.
+                This form does not contact emergency services.
+              </p>
+
+              <form onSubmit={submitReport}>
+                <label>
+                  Incident title
+                  <input
+                    name="title"
+                    placeholder="Example: Road flooding near bridge"
+                    required
+                    maxLength="100"
+                  />
+                </label>
+
+                <label>
+                  Location
+                  <input
+                    name="location"
+                    placeholder="Area, City"
+                    required
+                    maxLength="100"
+                  />
+                </label>
+
+                <div className="form-row">
+                  <label>
+                    Incident type
+                    <select name="type">
+                      <option>Flood</option>
+                      <option>Fire</option>
+                      <option>Storm</option>
+                      <option>Earthquake</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Severity
+                    <select name="severity">
+                      <option>Moderate</option>
+                      <option>High</option>
+                      <option>Critical</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label>
+                  Additional details
+                  <textarea
+                    name="description"
+                    placeholder="Describe the situation..."
+                    maxLength="500"
+                  ></textarea>
+                </label>
+
+                <button
+                  className="primary-button"
+                  type="submit"
+                >
+                  Submit demo report →
+                </button>
+              </form>
+            </Modal>
+          )}
+
+          {selected && (
+            <Modal
+              titleId="incident-title"
+              onClose={closeDetails}
+            >
+              <button
+                className="close-button"
+                aria-label="Close incident details"
+                onClick={closeDetails}
+              >
+                ✕
+              </button>
+
+              <span className="modal-icon">
+                {selected.icon || "⚠️"}
+              </span>
+
+              <h2 id="incident-title">{selected.title}</h2>
+              <p>📍 {selected.location}</p>
+
+              <div className="detail-box">
+                <p><strong>Type:</strong> {selected.type}</p>
+                <p><strong>Severity:</strong> {selected.severity}</p>
+                <p><strong>Status:</strong> {selected.status}</p>
+
+                {selected.description && (
+                  <p>
+                    <strong>Description:</strong>{" "}
+                    {selected.description}
+                  </p>
+                )}
+              </div>
+
+              <p>
+                Sample incident for demonstration.
+                No live emergency operation is connected.
+              </p>
+
+              <button
+                className="primary-button"
+                onClick={() => {
+                  setSelected(null);
+                  navigate("Response Teams");
+                }}
+              >
+                View response teams →
+              </button>
+            </Modal>
+          )}
+
+          {message && (
+            <div className="toast" role="status">
+              <span>✓</span>
+              <p>{message}</p>
+
+              <button
+                aria-label="Dismiss message"
+                onClick={() => setMessage("")}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(
+      document.getElementById("root")
+    );
+
+    root.render(<App />);
+  </script>
+</body>
+</html>
